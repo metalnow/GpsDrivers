@@ -884,7 +884,6 @@ int GPSDriverAshtech::parseChar(uint8_t b)
 			    (HEXDIGIT_CHAR(checksum & 0x0F) == *(_rx_buffer + _rx_buffer_bytes - 1))) {
 				iRet = _rx_buffer_bytes;
 			}
-
 			decodeInit();
 		}
 		break;
