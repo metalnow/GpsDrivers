@@ -630,16 +630,15 @@ int GPSDriverNMEA::configure(unsigned &baudrate, OutputMode output_mode)
 	/*
 	const unsigned baudrates_to_try[] = {9600, 38400, 19200, 57600, 115200};
 
-	for (unsigned intbaud_i = 0; baud_i < sizeof(baudrates_to_try) / sizeof(baudrates_to_try[0]);baud_i++)
+	for (unsigned int baud_i = 0; baud_i < sizeof(baudrates_to_try) / sizeof(baudrates_to_try[0]);baud_i++)
 	{
 		baudrate = baudrates_to_try[baud_i];
 		GPSHelper::setBaudrate(baudrate);
 
-		if (GPSHelper::write(comm,sizeof(comm)) != sizeof(comm)) {
-		return -1;
-		}
+		if (GPSHelper::write(comm,sizeof(comm)) != sizeof(comm))
+			return -1;
 	}
 	*/
-    	//return GPSHelper::setBaudrate(115200);
-    	return 0;
+
+    	return GPSHelper::setBaudrate(baudrate==0?57600:baudrate);
 }
