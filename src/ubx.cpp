@@ -55,7 +55,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctime>
-#include <cmath>
 
 #include "ubx.h"
 #include "rtcm.h"
@@ -190,10 +189,6 @@ GPSDriverUBX::configure(unsigned &baudrate, OutputMode output_mode)
 			} else {
 				_proto_ver_27_or_higher = false;
 
-				if (auto_baudrate) {
-					desired_baudrate = UBX_TX_CFG_PRT_BAUDRATE;
-				}
-
 				UBX_DEBUG("trying old protocol");
 
 				/* Send a CFG-PRT message to set the UBX protocol for in and out
@@ -219,6 +214,9 @@ GPSDriverUBX::configure(unsigned &baudrate, OutputMode output_mode)
 					continue;
 				}
 
+				if (auto_baudrate) {
+					desired_baudrate = UBX_TX_CFG_PRT_BAUDRATE;
+				}
 				/* Send a CFG-PRT message again, this time change the baudrate */
 				cfg_prt[0].baudRate	= desired_baudrate;
 				cfg_prt[1].baudRate	= desired_baudrate;
@@ -1394,8 +1392,7 @@ GPSDriverUBX::payloadRxDone()
 		    && (_buf.payload_rx_nav_pvt.valid & UBX_RX_NAV_PVT_VALID_VALIDTIME)
 		    && (_buf.payload_rx_nav_pvt.valid & UBX_RX_NAV_PVT_VALID_FULLYRESOLVED)) {
 			/* convert to unix timestamp */
-			struct tm timeinfo;
-			memset(&timeinfo, 0, sizeof(timeinfo));
+			tm timeinfo{};
 			timeinfo.tm_year	= _buf.payload_rx_nav_pvt.year - 1900;
 			timeinfo.tm_mon		= _buf.payload_rx_nav_pvt.month - 1;
 			timeinfo.tm_mday	= _buf.payload_rx_nav_pvt.day;
@@ -1411,8 +1408,7 @@ GPSDriverUBX::payloadRxDone()
 				// and control its drift. Since we rely on the HRT for our monotonic
 				// clock, updating it from time to time is safe.
 
-				timespec ts;
-				memset(&ts, 0, sizeof(ts));
+				timespec ts{};
 				ts.tv_sec = epoch;
 				ts.tv_nsec = _buf.payload_rx_nav_pvt.nano;
 
@@ -1500,8 +1496,7 @@ GPSDriverUBX::payloadRxDone()
 
 		if (_buf.payload_rx_nav_timeutc.valid & UBX_RX_NAV_TIMEUTC_VALID_VALIDUTC) {
 			// convert to unix timestamp
-			struct tm timeinfo;
-			memset(&timeinfo, 0, sizeof(tm));
+			tm timeinfo {};
 			timeinfo.tm_year	= _buf.payload_rx_nav_timeutc.year - 1900;
 			timeinfo.tm_mon		= _buf.payload_rx_nav_timeutc.month - 1;
 			timeinfo.tm_mday	= _buf.payload_rx_nav_timeutc.day;
@@ -1519,8 +1514,7 @@ GPSDriverUBX::payloadRxDone()
 				// and control its drift. Since we rely on the HRT for our monotonic
 				// clock, updating it from time to time is safe.
 
-				timespec ts;
-				memset(&ts, 0, sizeof(ts));
+				timespec ts{};
 				ts.tv_sec = epoch;
 				ts.tv_nsec = _buf.payload_rx_nav_timeutc.nano;
 
@@ -1561,7 +1555,7 @@ GPSDriverUBX::payloadRxDone()
 			UBX_DEBUG("Survey-in status: %is cur accuracy: %imm nr obs: %i valid: %i active: %i",
 				  svin.dur, svin.meanAcc / 10, svin.obs, (int)svin.valid, (int)svin.active);
 
-			SurveyInStatus status;
+			SurveyInStatus status{};
 			double ecef_x = ((double)svin.meanX + (double)svin.meanXHP * 0.01) * 0.01;
 			double ecef_y = ((double)svin.meanY + (double)svin.meanYHP * 0.01) * 0.01;
 			double ecef_z = ((double)svin.meanZ + (double)svin.meanZHP * 0.01) * 0.01;

@@ -36,7 +36,6 @@
 #include <math.h>
 #include <string.h>
 #include <ctime>
-#include <cmath>
 
 #include "ashtech.h"
 #include "rtcm.h"
@@ -1117,7 +1116,7 @@ int GPSDriverAshtech::configure(unsigned &baudrate, OutputMode output_mode)
 
 
 	if (output_mode == OutputMode::RTCM && _board == AshtechBoard::trimble_mb_two) {
-		SurveyInStatus status;
+		SurveyInStatus status{};
 		status.latitude = status.longitude = (double)NAN;
 		status.altitude = NAN;
 		status.duration = 0;
@@ -1223,7 +1222,7 @@ void GPSDriverAshtech::activateCorrectionOutput()
 void
 GPSDriverAshtech::sendSurveyInStatusUpdate(bool active, bool valid, double latitude, double longitude, float altitude)
 {
-	SurveyInStatus status;
+	SurveyInStatus status{};
 	status.latitude = latitude;
 	status.longitude = longitude;
 	status.altitude = altitude;
